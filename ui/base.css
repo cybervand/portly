@@ -1,0 +1,125 @@
+/* Portly – Base layout & utilities */
+/* PatternFly 6 / Cockpit compatible */
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "RedHatText", "Overpass", overpass, helvetica, arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--pf-v6-global--Color--100, #151515);
+    background-color: var(--pf-v6-global--BackgroundColor--100, #f0f0f0);
+}
+
+/* ── Page layout ─────────────────────────────── */
+
+.pf-v6-c-page__main-section {
+    padding: 24px;
+    background-color: var(--pf-v6-global--BackgroundColor--100, #f0f0f0);
+}
+
+/* ── Toolbar ─────────────────────────────────── */
+
+.pf-v6-c-toolbar__content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-bottom: 16px;
+}
+
+.pf-v6-c-toolbar__content-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.pf-v6-c-toolbar__content-section.pf-m-align-right {
+    margin-left: auto;
+}
+
+/* ── Title ───────────────────────────────────── */
+
+.pf-v6-c-title {
+    font-size: 24px;
+    font-weight: 400;
+    color: var(--pf-v6-global--Color--100, #151515);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pf-v6-c-title.pf-m-2xl {
+    font-size: 28px;
+}
+
+.pf-v6-c-title.pf-m-lg {
+    font-size: 18px;
+}
+
+.portly-logo {
+    color: var(--pf-v6-global--primary-color--100, #0066cc);
+    font-size: 1.5rem;
+}
+
+.portly-version {
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: var(--pf-v6-global--Color--200, #6a6e73);
+    vertical-align: middle;
+}
+
+.container-count {
+    font-size: 0.875rem;
+    color: var(--pf-v6-global--Color--200, #6a6e73);
+    white-space: nowrap;
+}
+
+/* ── Utility classes ─────────────────────────── */
+
+.pf-v6-u-display-none {
+    display: none !important;
+}
+
+.pf-v6-u-display-block {
+    display: block !important;
+}
+
+.pf-v6-u-mt-md {
+    margin-top: 16px;
+}
+
+/* ── Responsive ──────────────────────────────── */
+
+@media (max-width: 768px) {
+    .pf-v6-c-page__main-section {
+        padding: 16px;
+    }
+
+    .action-buttons {
+        justify-content: flex-start;
+    }
+}
+
+/* ── Dark mode – base ────────────────────────── */
+
+.portly-dark body {
+    color: #ffffff;
+    background-color: #151515;
+}
+
+.portly-dark .pf-v6-c-page__main-section {
+    background-color: #151515;
+}
+
+.portly-dark .pf-v6-c-title {
+    color: #ffffff;
+}
+
+.portly-dark .portly-version,
+.portly-dark .container-count {
+    color: #c7c7c7;
+}

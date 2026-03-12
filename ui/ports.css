@@ -1,0 +1,115 @@
+/* Portly – Port links & protocol toggle */
+
+.port-link {
+    color: var(--pf-v6-global--primary-color--100, #0066cc);
+    text-decoration: none;
+    font-weight: 600;
+    font-family: "Liberation Mono", "Consolas", monospace;
+    font-size: 13px;
+}
+
+.port-link:hover {
+    text-decoration: underline;
+}
+
+.port-none {
+    color: var(--pf-v6-global--Color--200, #6a6e73);
+    font-style: italic;
+}
+
+/* ── Port rows ───────────────────────────────── */
+
+.port-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 4px;
+    flex-wrap: nowrap;
+}
+
+.port-row:last-child {
+    margin-bottom: 0;
+}
+
+.port-nolink {
+    font-family: "Liberation Mono", "Consolas", monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--pf-v6-global--Color--200, #6a6e73);
+}
+
+.port-suffix {
+    font-family: "Liberation Mono", "Consolas", monospace;
+    font-size: 13px;
+    color: var(--pf-v6-global--Color--200, #6a6e73);
+    white-space: nowrap;
+}
+
+/* ── Protocol toggle button ──────────────────── */
+
+.port-proto-toggle {
+    font-size: 10px;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-family: "Liberation Mono", "Consolas", monospace;
+    font-weight: 600;
+    line-height: 1.4;
+    cursor: pointer;
+    border: 1px solid;
+    background: transparent;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.port-proto-toggle[data-proto="http"] {
+    color: #0066cc;
+    border-color: #0066cc;
+}
+
+.port-proto-toggle[data-proto="https"] {
+    color: #3e8635;
+    border-color: #3e8635;
+}
+
+.port-proto-toggle[data-proto="none"] {
+    color: #6a6e73;
+    border-color: #6a6e73;
+}
+
+.port-proto-toggle[data-proto="http"]:hover {
+    background-color: #0066cc;
+    color: #ffffff;
+}
+
+.port-proto-toggle[data-proto="https"]:hover {
+    background-color: #3e8635;
+    color: #ffffff;
+}
+
+.port-proto-toggle[data-proto="none"]:hover {
+    background-color: #6a6e73;
+    color: #ffffff;
+}
+
+/* ── Dark mode – ports ───────────────────────── */
+
+.portly-dark .port-nolink,
+.portly-dark .port-suffix {
+    color: #c7c7c7;
+}
+
+.portly-dark .port-proto-toggle[data-proto="http"] {
+    color: #73bcf7;
+    border-color: #73bcf7;
+}
+
+.portly-dark .port-proto-toggle[data-proto="https"] {
+    color: #73c991;
+    border-color: #73c991;
+}
+
+.portly-dark .port-proto-toggle[data-proto="none"] {
+    color: #6a6e73;
+    border-color: #6a6e73;
+}

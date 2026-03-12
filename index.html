@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Portly</title>
+    <link rel="stylesheet" href="ui/base.css">
+    <link rel="stylesheet" href="ui/components.css">
+    <link rel="stylesheet" href="ui/ports.css">
+    <link rel="stylesheet" href="ui/modals.css">
+    <link rel="stylesheet" href="ui/kebab.css">
+</head>
+<body>
+    <div class="pf-v6-c-page">
+        <main class="pf-v6-c-page__main" tabindex="-1">
+            <section class="pf-v6-c-page__main-section">
+                <div class="pf-v6-c-toolbar">
+                    <div class="pf-v6-c-toolbar__content">
+                        <div class="pf-v6-c-toolbar__content-section">
+                            <div class="pf-v6-c-toolbar__item">
+                                <h1 class="pf-v6-c-title pf-m-2xl">
+                                    <span class="portly-logo">⚓</span> Portly
+                                    <span id="portly-version" class="portly-version"></span>
+                                </h1>
+                            </div>
+                            <div class="pf-v6-c-toolbar__item">
+                                <span id="container-count" class="container-count"></span>
+                            </div>
+                        </div>
+                        <div class="pf-v6-c-toolbar__content-section pf-m-align-right">
+                            <div class="pf-v6-c-toolbar__item">
+                                <button class="pf-v6-c-button pf-m-primary" id="refresh-btn">
+                                    <span class="pf-v6-c-button__icon pf-m-start">
+                                        <i class="fa fa-refresh" aria-hidden="true"></i>
+                                    </span>
+                                    Refresh
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="error-section" class="pf-v6-u-display-none pf-v6-u-mt-md">
+                    <div class="pf-v6-c-alert pf-m-danger">
+                        <div class="pf-v6-c-alert__icon">
+                            <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+                        </div>
+                        <div class="pf-v6-c-alert__title" id="error-message"></div>
+                    </div>
+                </div>
+
+                <div id="loading-section" class="pf-v6-u-mt-md">
+                    <div class="pf-v6-c-empty-state">
+                        <div class="pf-v6-c-empty-state__content">
+                            <div class="pf-v6-c-spinner pf-m-xl" role="progressbar">
+                                <span class="pf-v6-c-spinner__clipper"></span>
+                                <span class="pf-v6-c-spinner__lead-ball"></span>
+                                <span class="pf-v6-c-spinner__tail-ball"></span>
+                            </div>
+                            <div class="pf-v6-c-empty-state__body">Loading containers...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="containers-section" class="pf-v6-u-display-none pf-v6-u-mt-md">
+                    <table class="pf-v6-c-table pf-m-grid-md" role="grid">
+                        <thead>
+                            <tr role="row">
+                                <th role="columnheader" scope="col">Name</th>
+                                <th role="columnheader" scope="col">Status</th>
+                                <th role="columnheader" scope="col">Image</th>
+                                <th role="columnheader" scope="col">Ports</th>
+                                <th role="columnheader" scope="col">Uptime</th>
+                                <th role="columnheader" scope="col" class="pf-v6-c-table__action">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody role="rowgroup" id="containers-tbody">
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="no-containers-section" class="pf-v6-u-display-none pf-v6-u-mt-md">
+                    <div class="pf-v6-c-empty-state">
+                        <div class="pf-v6-c-empty-state__content">
+                            <i class="fa fa-cubes pf-v6-c-empty-state__icon" aria-hidden="true"></i>
+                            <h2 class="pf-v6-c-title pf-m-lg">No containers found</h2>
+                            <div class="pf-v6-c-empty-state__body">
+                                No Docker containers exist on this system.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Text viewer modal (logs, compose files, etc.) -->
+    <div class="pf-v6-c-backdrop" id="textviewer-backdrop" aria-hidden="true">
+        <div class="pf-v6-l-bullseye">
+            <div class="pf-v6-c-modal-box pf-m-lg" role="dialog" aria-modal="true" aria-labelledby="textviewer-title">
+                <button class="portly-close-btn" type="button" id="textviewer-close-btn" aria-label="Close dialog">&#x2715;</button>
+                <header class="pf-v6-c-modal-box__header">
+                    <h1 class="pf-v6-c-modal-box__title" id="textviewer-title">Text Viewer</h1>
+                </header>
+                <div class="pf-v6-c-modal-box__body">
+                    <div class="logs-container" id="textviewer-content"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm / delete modal -->
+    <div class="pf-v6-c-backdrop" id="confirm-backdrop" aria-hidden="true">
+        <div class="pf-v6-l-bullseye">
+            <div class="pf-v6-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+                <header class="pf-v6-c-modal-box__header">
+                    <h1 class="pf-v6-c-modal-box__title" id="confirm-title">Confirm</h1>
+                </header>
+                <div class="pf-v6-c-modal-box__body">
+                    <p id="confirm-message"></p>
+                </div>
+                <footer class="pf-v6-c-modal-box__footer">
+                    <button class="pf-v6-c-button pf-m-danger pf-m-small" type="button" id="confirm-ok-btn">Confirm</button>
+                    <button class="pf-v6-c-button pf-m-secondary pf-m-small" type="button" id="confirm-cancel-btn">Cancel</button>
+                </footer>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cockpit base -->
+    <script src="../base1/cockpit.js"></script>
+
+    <!-- UI modules (order matters: no cross-dependencies except render → ports, kebab) -->
+    <script src="ui/darkmode.js"></script>
+    <script src="ui/ports.js"></script>
+    <script src="ui/textviewer.js"></script>
+    <script src="ui/modals.js"></script>
+    <script src="ui/kebab.js"></script>
+    <script src="ui/render.js"></script>
+
+    <!-- Backend -->
+    <script src="backend/docker.js"></script>
+    <script src="backend/containers.js"></script>
+    <script src="backend/main.js"></script>
+</body>
+</html>

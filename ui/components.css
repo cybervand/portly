@@ -1,0 +1,317 @@
+/* Portly – Components */
+
+/* ── Buttons ─────────────────────────────────── */
+
+.pf-v6-c-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.5;
+    text-align: center;
+    white-space: nowrap;
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    font-family: inherit;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.pf-v6-c-button.pf-m-primary {
+    color: #ffffff;
+    background-color: var(--pf-v6-global--primary-color--100, #0066cc);
+    border-color: var(--pf-v6-global--primary-color--100, #0066cc);
+}
+
+.pf-v6-c-button.pf-m-primary:hover {
+    background-color: var(--pf-v6-global--primary-color--200, #004080);
+    border-color: var(--pf-v6-global--primary-color--200, #004080);
+}
+
+.pf-v6-c-button.pf-m-secondary {
+    color: var(--pf-v6-global--primary-color--100, #0066cc);
+    background-color: transparent;
+    border-color: var(--pf-v6-global--primary-color--100, #0066cc);
+}
+
+.pf-v6-c-button.pf-m-secondary:hover {
+    background-color: var(--pf-v6-global--primary-color--100, #0066cc);
+    color: #ffffff;
+}
+
+.pf-v6-c-button.pf-m-plain {
+    background: transparent;
+    border: none;
+    color: #6a6e73;
+    padding: 6px;
+}
+
+.pf-v6-c-button.pf-m-plain:hover {
+    color: #c9190b;
+    background-color: rgba(201, 25, 11, 0.08);
+}
+
+.pf-v6-c-button.pf-m-small {
+    font-size: 12px;
+    padding: 4px 12px;
+}
+
+.pf-v6-c-button.pf-m-danger {
+    color: #ffffff;
+    background-color: var(--pf-v6-global--danger-color--100, #c9190b);
+    border-color: var(--pf-v6-global--danger-color--100, #c9190b);
+}
+
+.pf-v6-c-button.pf-m-danger:hover {
+    background-color: #a30000;
+    border-color: #a30000;
+}
+
+.pf-v6-c-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.pf-v6-c-button:focus {
+    outline: 2px solid var(--pf-v6-global--primary-color--100, #0066cc);
+    outline-offset: 2px;
+}
+
+.pf-v6-c-button__icon {
+    display: inline-flex;
+    align-items: center;
+}
+
+/* ── Table ───────────────────────────────────── */
+
+.pf-v6-c-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--pf-v6-global--BackgroundColor--200, #ffffff);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(3, 3, 3, 0.12);
+}
+
+.pf-v6-c-table thead tr {
+    border-bottom: 2px solid var(--pf-v6-global--BorderColor--100, #d2d2d2);
+}
+
+.pf-v6-c-table th {
+    padding: 12px 16px;
+    font-weight: 600;
+    font-size: 13px;
+    text-align: left;
+    color: var(--pf-v6-global--Color--200, #6a6e73);
+    background-color: var(--pf-v6-global--BackgroundColor--200, #ffffff);
+}
+
+.pf-v6-c-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--pf-v6-global--BorderColor--100, #d2d2d2);
+    color: var(--pf-v6-global--Color--100, #151515);
+    vertical-align: top;
+}
+
+.pf-v6-c-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.pf-v6-c-table tbody tr:hover td {
+    background-color: var(--pf-v6-global--BackgroundColor--100, #f5f5f5);
+}
+
+.pf-v6-c-table__action {
+    text-align: right;
+}
+
+/* ── Status badges ───────────────────────────── */
+
+.status-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-badge-running {
+    background-color: #f0f8f0;
+    color: #1e4f18;
+    border: 1px solid #3e8635;
+}
+
+.status-badge-stopped {
+    background-color: #fef6f5;
+    color: #a30000;
+    border: 1px solid #c9190b;
+}
+
+.status-badge-paused {
+    background-color: #fffbf0;
+    color: #795600;
+    border: 1px solid #f0ab00;
+}
+
+/* ── Container name & image ──────────────────── */
+
+.container-name {
+    font-weight: 600;
+    color: var(--pf-v6-global--Color--100, #151515);
+    display: block;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.image-name {
+    display: block;
+    max-width: 260px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: "Liberation Mono", "Consolas", monospace;
+    font-size: 13px;
+}
+
+/* ── Alert / error ───────────────────────────── */
+
+.pf-v6-c-alert {
+    padding: 14px 16px;
+    border-radius: 4px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.pf-v6-c-alert.pf-m-danger {
+    background-color: #fef6f5;
+    border-left: 4px solid #c9190b;
+    color: #a30000;
+}
+
+.pf-v6-c-alert__icon {
+    font-size: 16px;
+    padding-top: 1px;
+}
+
+.pf-v6-c-alert__title {
+    font-size: 14px;
+    font-weight: 500;
+    margin: 0;
+}
+
+/* ── Empty state ─────────────────────────────── */
+
+.pf-v6-c-empty-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px;
+}
+
+.pf-v6-c-empty-state__content {
+    text-align: center;
+    max-width: 400px;
+}
+
+.pf-v6-c-empty-state__icon {
+    font-size: 48px;
+    color: var(--pf-v6-global--Color--200, #6a6e73);
+    margin-bottom: 16px;
+    display: block;
+}
+
+.pf-v6-c-empty-state__body {
+    color: var(--pf-v6-global--Color--200, #6a6e73);
+    margin-top: 8px;
+}
+
+/* ── Spinner ─────────────────────────────────── */
+
+.pf-v6-c-spinner {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(0, 102, 204, 0.2);
+    border-top-color: var(--pf-v6-global--primary-color--100, #0066cc);
+    border-radius: 50%;
+    animation: portly-spin 0.8s linear infinite;
+    margin-bottom: 16px;
+}
+
+.pf-v6-c-spinner.pf-m-xl {
+    width: 56px;
+    height: 56px;
+    border-width: 5px;
+}
+
+/* Hide PF inner span elements — we use a CSS border animation instead */
+.pf-v6-c-spinner__clipper,
+.pf-v6-c-spinner__lead-ball,
+.pf-v6-c-spinner__tail-ball {
+    display: none;
+}
+
+@keyframes portly-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ── Dark mode – components ──────────────────── */
+
+.portly-dark .pf-v6-c-table {
+    background-color: #212427;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.portly-dark .pf-v6-c-table th {
+    background-color: #212427;
+    color: #c7c7c7;
+    border-bottom-color: #444548;
+}
+
+.portly-dark .pf-v6-c-table td {
+    border-bottom-color: #444548;
+    color: #ffffff;
+}
+
+.portly-dark .pf-v6-c-table tbody tr:hover td {
+    background-color: #2b2d31;
+}
+
+.portly-dark .container-name {
+    color: #ffffff;
+}
+
+.portly-dark .status-badge-running {
+    background-color: #1e4f18;
+    color: #73c991;
+    border-color: #3e8635;
+}
+
+.portly-dark .status-badge-stopped {
+    background-color: #3d0000;
+    color: #ff8585;
+    border-color: #c9190b;
+}
+
+.portly-dark .status-badge-paused {
+    background-color: #3d2c00;
+    color: #f4c030;
+    border-color: #f0ab00;
+}
+
+.portly-dark .pf-v6-c-alert.pf-m-danger {
+    background-color: #3d0000;
+    color: #ff8585;
+    border-left-color: #ff6b6b;
+}
+
+.portly-dark .pf-v6-c-empty-state__body,
+.portly-dark .pf-v6-c-empty-state__icon {
+    color: #c7c7c7;
+}

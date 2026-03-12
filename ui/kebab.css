@@ -1,0 +1,112 @@
+/* Portly – Kebab button & context menu */
+
+/* ── Kebab button ────────────────────────────── */
+
+.portly-kebab {
+    font-size: 20px;
+    padding: 2px 10px;
+    color: #6a6e73;
+    border-radius: 4px;
+    line-height: 1;
+    letter-spacing: 1px;
+    border: 1px solid transparent;
+}
+
+.portly-kebab:hover {
+    background-color: rgba(0, 0, 0, 0.08);
+    border-color: rgba(0, 0, 0, 0.1);
+    color: #151515;
+}
+
+/* ── Context / dropdown menu ─────────────────── */
+
+.portly-menu {
+    position: fixed;
+    z-index: 2000;
+    background-color: #ffffff;
+    border: 1px solid #d2d2d2;
+    border-radius: 6px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+    min-width: 160px;
+    padding: 4px 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.portly-menu__item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-family: inherit;
+    color: #151515;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    white-space: nowrap;
+    transition: background-color 0.1s ease;
+}
+
+.portly-menu__item:hover,
+.portly-menu__item:focus {
+    background-color: #f0f0f0;
+    outline: none;
+}
+
+.portly-menu__item--danger {
+    color: #c9190b;
+}
+
+.portly-menu__item--danger:hover,
+.portly-menu__item--danger:focus {
+    background-color: #fef6f5;
+}
+
+.portly-menu__divider {
+    height: 1px;
+    background-color: #d2d2d2;
+    margin: 4px 0;
+}
+
+/* ── Dark mode – kebab & menu ────────────────── */
+
+.portly-dark .portly-kebab {
+    color: #c7c7c7;
+}
+
+.portly-dark .portly-kebab:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+}
+
+/* Menu is appended to body so needs html.portly-dark selector */
+html.portly-dark .portly-menu {
+    background-color: #212427;
+    border-color: #444548;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+html.portly-dark .portly-menu__item {
+    color: #ffffff;
+}
+
+html.portly-dark .portly-menu__item:hover,
+html.portly-dark .portly-menu__item:focus {
+    background-color: #2b2d31;
+}
+
+html.portly-dark .portly-menu__item--danger {
+    color: #ff8585;
+}
+
+html.portly-dark .portly-menu__item--danger:hover,
+html.portly-dark .portly-menu__item--danger:focus {
+    background-color: #3d0000;
+}
+
+html.portly-dark .portly-menu__divider {
+    background-color: #444548;
+}
