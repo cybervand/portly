@@ -36,7 +36,8 @@
                     status:  status,
                     ports:   parts[5].trim(),
                     name:    parts[6].trim(),
-                    state:   state
+                    state:   state,
+                    compose: parts[7] ? parts[7].trim() : ''
                 });
             }
         }

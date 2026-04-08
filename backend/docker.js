@@ -12,7 +12,7 @@
     function ps() {
         return cockpit.spawn([
             'docker', 'ps', '-a',
-            '--format', '{{.ID}}|{{.Image}}|{{.Command}}|{{.CreatedAt}}|{{.Status}}|{{.Ports}}|{{.Names}}'
+            '--format', '{{.ID}}|{{.Image}}|{{.Command}}|{{.CreatedAt}}|{{.Status}}|{{.Ports}}|{{.Names}}|{{index .Labels "com.docker.compose.project"}}'
         ], { superuser: 'try' });
     }
 

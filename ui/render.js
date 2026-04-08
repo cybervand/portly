@@ -69,16 +69,175 @@
         refreshBtn.disabled = disabled;
     }
 
+    // ── Row builder ────────────────────────────────────────────────────────────
+
+    function buildRow(container, actions) {
+        var row = document.createElement('tr');
+        row.setAttribute('role', 'row');
+
+        // Name
+        var nameCell = document.createElement('td');
+        nameCell.setAttribute('role', 'cell');
+        nameCell.setAttribute('data-label', 'Name');
+        var nameSpan = document.createElement('span');
+        nameSpan.className = 'container-name';
+        nameSpan.textContent = container.name;
+        nameCell.appendChild(nameSpan);
+        row.appendChild(nameCell);
+
+        // Status
+        var statusCell = document.createElement('td');
+        statusCell.setAttribute('role', 'cell');
+        statusCell.setAttribute('data-label', 'Status');
+        var statusSpan = document.createElement('span');
+        statusSpan.className = getStatusBadgeClass(container.state);
+        statusSpan.textContent = container.state.charAt(0).toUpperCase() + container.state.slice(1);
+        statusCell.appendChild(statusSpan);
+        row.appendChild(statusCell);
+
+        // Image
+        var imageCell = document.createElement('td');
+        imageCell.setAttribute('role', 'cell');
+        imageCell.setAttribute('data-label', 'Image');
+        var imageSpan = document.createElement('span');
+        imageSpan.className = 'image-name';
+        imageSpan.textContent = container.image;
+        imageSpan.title = container.image;
+        imageCell.appendChild(imageSpan);
+        row.appendChild(imageCell);
+
+        // Ports
+        var portsCell = document.createElement('td');
+        portsCell.setAttribute('role', 'cell');
+        portsCell.setAttribute('data-label', 'Ports');
+        portsCell.appendChild(Portly.ports.buildPortsCell(container.ports, container.name));
+        row.appendChild(portsCell);
+
+        // Uptime
+        var uptimeCell = document.createElement('td');
+        uptimeCell.setAttribute('role', 'cell');
+        uptimeCell.setAttribute('data-label', 'Uptime');
+        uptimeCell.textContent = formatUptime(container.status);
+        row.appendChild(uptimeCell);
+
+        // Actions (kebab)
+        var actionsCell = document.createElement('td');
+        actionsCell.setAttribute('role', 'cell');
+        actionsCell.setAttribute('data-label', 'Actions');
+        actionsCell.className = 'pf-v6-c-table__action';
+        actionsCell.appendChild(Portly.kebab.createButton(container, row, actions));
+        row.appendChild(actionsCell);
+
+        return row;
+    }
+
+    // ── Group accordion ────────────────────────────────────────────────────────
+
+    function buildGroupHeader(project, containers) {
+        var running = containers.filter(function (c) { return c.state === 'running'; }).length;
+        var total   = containers.length;
+        var summary = total + ' container' + (total !== 1 ? 's' : '') + ' \u00B7 ' + running + ' running';
+
+        var row = document.createElement('tr');
+        row.className = 'portly-group-header';
+
+        var cell = document.createElement('td');
+        cell.setAttribute('colspan', '6');
+
+        var arrow = document.createElement('span');
+        arrow.className = 'portly-group-arrow';
+        arrow.textContent = '\u25B6'; // ▶
+
+        var nameSpan = document.createElement('span');
+        nameSpan.className = 'portly-group-name';
+        nameSpan.textContent = project;
+
+        var summarySpan = document.createElement('span');
+        summarySpan.className = 'portly-group-summary';
+        summarySpan.textContent = summary;
+
+        cell.appendChild(arrow);
+        cell.appendChild(nameSpan);
+        cell.appendChild(summarySpan);
+        row.appendChild(cell);
+
+        return row;
+    }
+
+    function buildDivider() {
+        var row = document.createElement('tr');
+        row.className = 'portly-group-divider';
+        var cell = document.createElement('td');
+        cell.setAttribute('colspan', '6');
+        row.appendChild(cell);
+        return row;
+    }
+
+    function setupGroupToggle(headerRow, memberRows) {
+        headerRow.addEventListener('click', function () {
+            var isOpen = headerRow.classList.contains('portly-group-open');
+            var arrow  = headerRow.querySelector('.portly-group-arrow');
+
+            if (isOpen) {
+                headerRow.classList.remove('portly-group-open');
+                arrow.textContent = '\u25B6'; // ▶
+                memberRows.forEach(function (r) { r.style.display = 'none'; });
+            } else {
+                headerRow.classList.add('portly-group-open');
+                arrow.textContent = '\u25BC'; // ▼
+                memberRows.forEach(function (r) { r.style.display = ''; });
+            }
+        });
+    }
+
+    function renderGrouped(containers, actions) {
+        var groups     = {};
+        var standalone = [];
+
+        containers.forEach(function (c) {
+            if (c.compose) {
+                if (!groups[c.compose]) groups[c.compose] = [];
+                groups[c.compose].push(c);
+            } else {
+                standalone.push(c);
+            }
+        });
+
+        var projectNames = Object.keys(groups).sort();
+        var isFirst = true;
+
+        projectNames.forEach(function (project) {
+            if (!isFirst) containersTbody.appendChild(buildDivider());
+            isFirst = false;
+
+            var headerRow  = buildGroupHeader(project, groups[project]);
+            containersTbody.appendChild(headerRow);
+
+            var memberRows = [];
+            groups[project].forEach(function (container) {
+                var row = buildRow(container, actions);
+                row.style.display = 'none'; // collapsed by default
+                memberRows.push(row);
+                containersTbody.appendChild(row);
+            });
+
+            setupGroupToggle(headerRow, memberRows);
+        });
+
+        // Standalone containers — always visible, no toggle
+        if (standalone.length > 0) {
+            if (!isFirst) containersTbody.appendChild(buildDivider());
+            standalone.forEach(function (container) {
+                containersTbody.appendChild(buildRow(container, actions));
+            });
+        }
+    }
+
     // ── Container table ────────────────────────────────────────────────────────
 
-    /** Render the full container table.
-     *  @param {Array}  containers - parsed container list
-     *  @param {Object} actions    - handler map passed through to kebab menu
-     */
     function renderContainers(containers, actions) {
         containersTbody.innerHTML = '';
 
-        // Update header count
         if (containerCount) {
             var running = containers.filter(function (c) { return c.state === 'running'; }).length;
             var total   = containers.length;
@@ -92,65 +251,15 @@
             return;
         }
 
-        containers.forEach(function (container) {
-            var row = document.createElement('tr');
-            row.setAttribute('role', 'row');
+        var hasGroups = containers.some(function (c) { return c.compose; });
 
-            // Name
-            var nameCell = document.createElement('td');
-            nameCell.setAttribute('role', 'cell');
-            nameCell.setAttribute('data-label', 'Name');
-            var nameSpan = document.createElement('span');
-            nameSpan.className = 'container-name';
-            nameSpan.textContent = container.name;
-            nameCell.appendChild(nameSpan);
-            row.appendChild(nameCell);
-
-            // Status
-            var statusCell = document.createElement('td');
-            statusCell.setAttribute('role', 'cell');
-            statusCell.setAttribute('data-label', 'Status');
-            var statusSpan = document.createElement('span');
-            statusSpan.className = getStatusBadgeClass(container.state);
-            statusSpan.textContent = container.state.charAt(0).toUpperCase() + container.state.slice(1);
-            statusCell.appendChild(statusSpan);
-            row.appendChild(statusCell);
-
-            // Image
-            var imageCell = document.createElement('td');
-            imageCell.setAttribute('role', 'cell');
-            imageCell.setAttribute('data-label', 'Image');
-            var imageSpan = document.createElement('span');
-            imageSpan.className = 'image-name';
-            imageSpan.textContent = container.image;
-            imageSpan.title = container.image;
-            imageCell.appendChild(imageSpan);
-            row.appendChild(imageCell);
-
-            // Ports
-            var portsCell = document.createElement('td');
-            portsCell.setAttribute('role', 'cell');
-            portsCell.setAttribute('data-label', 'Ports');
-            portsCell.appendChild(Portly.ports.buildPortsCell(container.ports, container.name));
-            row.appendChild(portsCell);
-
-            // Uptime
-            var uptimeCell = document.createElement('td');
-            uptimeCell.setAttribute('role', 'cell');
-            uptimeCell.setAttribute('data-label', 'Uptime');
-            uptimeCell.textContent = formatUptime(container.status);
-            row.appendChild(uptimeCell);
-
-            // Actions (kebab)
-            var actionsCell = document.createElement('td');
-            actionsCell.setAttribute('role', 'cell');
-            actionsCell.setAttribute('data-label', 'Actions');
-            actionsCell.className = 'pf-v6-c-table__action';
-            actionsCell.appendChild(Portly.kebab.createButton(container, row, actions));
-            row.appendChild(actionsCell);
-
-            containersTbody.appendChild(row);
-        });
+        if (hasGroups) {
+            renderGrouped(containers, actions);
+        } else {
+            containers.forEach(function (container) {
+                containersTbody.appendChild(buildRow(container, actions));
+            });
+        }
 
         showSection(containersSection);
     }
@@ -158,10 +267,10 @@
     // ── Export ──────────────────────────────────────────────────────────────────
 
     Portly.render = {
-        showSection:          showSection,
-        showError:            showError,
-        showLoading:          showLoading,
-        renderContainers:     renderContainers,
+        showSection:           showSection,
+        showError:             showError,
+        showLoading:           showLoading,
+        renderContainers:      renderContainers,
         setAllButtonsDisabled: setAllButtonsDisabled
     };
 })();
