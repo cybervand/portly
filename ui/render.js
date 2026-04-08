@@ -133,17 +133,19 @@
 
     // ── Group accordion ────────────────────────────────────────────────────────
 
-    function findMainPort(containers) {
+    /** Find the "main" container in a group — the first running one with a web port. */
+    function findMainContainer(containers) {
         var running = containers.filter(function (c) { return c.state === 'running'; });
         for (var i = 0; i < running.length; i++) {
             var mappings = Portly.ports.parsePortMappings(running[i].ports);
             for (var j = 0; j < mappings.length; j++) {
                 if (Portly.ports.getDefaultProtocol(mappings[j].port) !== 'none') {
-                    return mappings[j];
+                    return { container: running[i], port: mappings[j] };
                 }
             }
         }
-        return null;
+        // Fallback: first running container (no web port), or first container overall
+        return { container: running[0] || containers[0], port: null };
     }
 
     function buildGroupHeader(project, containers, actions) {
@@ -179,29 +181,48 @@
         statusCell.appendChild(statusSpan);
         row.appendChild(statusCell);
 
-        // ── Image column: empty ────────────────────────────────────────────────
-        row.appendChild(document.createElement('td'));
+        // ── Find main container for Image, Ports, Uptime ──────────────────────
+        var main = findMainContainer(containers);
+        var mainC = main.container;
+
+        // ── Image column ───────────────────────────────────────────────────────
+        var imageCell = document.createElement('td');
+        imageCell.setAttribute('role', 'cell');
+        imageCell.setAttribute('data-label', 'Image');
+        if (mainC) {
+            var imageSpan = document.createElement('span');
+            imageSpan.className = 'image-name';
+            imageSpan.textContent = mainC.image;
+            imageSpan.title = mainC.image;
+            imageCell.appendChild(imageSpan);
+        }
+        row.appendChild(imageCell);
 
         // ── Ports column: main port link ───────────────────────────────────────
         var portsCell = document.createElement('td');
         portsCell.setAttribute('role', 'cell');
         portsCell.setAttribute('data-label', 'Ports');
-        var mainPort = findMainPort(containers);
-        if (mainPort) {
-            var proto    = Portly.ports.getDefaultProtocol(mainPort.port);
+        if (main.port) {
+            var proto    = Portly.ports.getDefaultProtocol(main.port.port);
             var portLink = document.createElement('a');
             portLink.className   = 'portly-group-port-link';
-            portLink.href        = proto + '://' + mainPort.host + ':' + mainPort.port;
+            portLink.href        = proto + '://' + main.port.host + ':' + main.port.port;
             portLink.target      = '_blank';
             portLink.rel         = 'noopener noreferrer';
-            portLink.textContent = mainPort.host + ':' + mainPort.port;
+            portLink.textContent = main.port.host + ':' + main.port.port;
             portLink.addEventListener('click', function (e) { e.stopPropagation(); });
             portsCell.appendChild(portLink);
         }
         row.appendChild(portsCell);
 
-        // ── Uptime column: empty ───────────────────────────────────────────────
-        row.appendChild(document.createElement('td'));
+        // ── Uptime column ──────────────────────────────────────────────────────
+        var uptimeCell = document.createElement('td');
+        uptimeCell.setAttribute('role', 'cell');
+        uptimeCell.setAttribute('data-label', 'Uptime');
+        if (mainC) {
+            uptimeCell.textContent = formatUptime(mainC.status);
+        }
+        row.appendChild(uptimeCell);
 
         // ── Actions column: group kebab ────────────────────────────────────────
         var actionsCell = document.createElement('td');
