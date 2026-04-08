@@ -133,6 +133,28 @@
             });
         },
 
+        startAll: function (names) {
+            Portly.render.setAllButtonsDisabled(true);
+            Portly.containers.startAll(names, {
+                onSuccess: refresh,
+                onError: function (msg) {
+                    Portly.render.setAllButtonsDisabled(false);
+                    Portly.render.showError(msg);
+                }
+            });
+        },
+
+        restartAll: function (names) {
+            Portly.render.setAllButtonsDisabled(true);
+            Portly.containers.restartAll(names, {
+                onSuccess: refresh,
+                onError: function (msg) {
+                    Portly.render.setAllButtonsDisabled(false);
+                    Portly.render.showError(msg);
+                }
+            });
+        },
+
         deleteAll: function (names, project) {
             var message = 'All containers in \u201C' + project + '\u201D will be stopped and permanently deleted. This cannot be undone.';
             Portly.confirm.show('Delete Project', message, 'Delete All', true, function () {

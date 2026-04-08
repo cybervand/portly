@@ -288,6 +288,70 @@
         });
     }
 
+    function startAll(names, callbacks) {
+        var remaining = names.length;
+        var failed    = 0;
+
+        if (remaining === 0) {
+            if (callbacks.onSuccess) callbacks.onSuccess();
+            return;
+        }
+
+        names.forEach(function (name) {
+            cli().start(name)
+                .done(function () {
+                    remaining--;
+                    if (remaining === 0) {
+                        if (failed > 0) {
+                            if (callbacks.onError) callbacks.onError('Some containers failed to start');
+                        } else {
+                            if (callbacks.onSuccess) callbacks.onSuccess();
+                        }
+                    }
+                })
+                .fail(function (error) {
+                    console.error('Failed to start container:', name, error);
+                    failed++;
+                    remaining--;
+                    if (remaining === 0) {
+                        if (callbacks.onError) callbacks.onError('Some containers failed to start');
+                    }
+                });
+        });
+    }
+
+    function restartAll(names, callbacks) {
+        var remaining = names.length;
+        var failed    = 0;
+
+        if (remaining === 0) {
+            if (callbacks.onSuccess) callbacks.onSuccess();
+            return;
+        }
+
+        names.forEach(function (name) {
+            cli().restart(name)
+                .done(function () {
+                    remaining--;
+                    if (remaining === 0) {
+                        if (failed > 0) {
+                            if (callbacks.onError) callbacks.onError('Some containers failed to restart');
+                        } else {
+                            if (callbacks.onSuccess) callbacks.onSuccess();
+                        }
+                    }
+                })
+                .fail(function (error) {
+                    console.error('Failed to restart container:', name, error);
+                    failed++;
+                    remaining--;
+                    if (remaining === 0) {
+                        if (callbacks.onError) callbacks.onError('Some containers failed to restart');
+                    }
+                });
+        });
+    }
+
     function deleteAll(names, callbacks) {
         var remaining = names.length;
         var failed    = 0;
@@ -378,6 +442,8 @@
         updateContainer:  updateContainer,
         deleteContainer:  deleteContainer,
         stopAll:          stopAll,
+        startAll:         startAll,
+        restartAll:       restartAll,
         deleteAll:        deleteAll,
         fetchLogs:        fetchLogs,
         fetchComposeFile: fetchComposeFile

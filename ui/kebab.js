@@ -106,8 +106,12 @@
     }
 
     /** Create a kebab ⋮ button for a compose project group.
-     *  Menu items: Stop all (if any running) / Delete all. */
-    function createGroupButton(project, containers, groupActions) {
+     *  @param {string}  project        - compose project name
+     *  @param {Array}   containers     - all containers in the project
+     *  @param {Object}  mainContainer  - the "main" container (for logs/compose/update)
+     *  @param {Object}  actions        - full action map from main.js
+     */
+    function createGroupButton(project, containers, mainContainer, actions) {
         var btn = document.createElement('button');
         btn.className = 'pf-v6-c-button pf-m-plain portly-kebab';
         btn.setAttribute('aria-label', 'Actions for project ' + project);
@@ -126,16 +130,41 @@
             var runningNames = containers
                 .filter(function (c) { return c.state === 'running' || c.state === 'paused'; })
                 .map(function (c) { return c.name; });
+            var stoppedNames = containers
+                .filter(function (c) { return c.state !== 'running' && c.state !== 'paused'; })
+                .map(function (c) { return c.name; });
 
+            // Lifecycle
             if (runningNames.length > 0) {
                 menu.appendChild(makeItem('fa-stop', 'Stop all', false, function () {
-                    groupActions.stopAll(runningNames);
+                    actions.stopAll(runningNames);
+                }));
+            }
+            if (stoppedNames.length > 0) {
+                menu.appendChild(makeItem('fa-play', 'Start all', false, function () {
+                    actions.startAll(stoppedNames);
+                }));
+            }
+            menu.appendChild(makeItem('fa-refresh', 'Restart all', false, function () {
+                actions.restartAll(allNames);
+            }));
+
+            // Main-container actions
+            if (mainContainer) {
+                menu.appendChild(makeItem('fa-arrow-up', 'Update', false, function () {
+                    actions.update(mainContainer.name, mainContainer.image);
+                }));
+                menu.appendChild(makeItem('fa-file-text', 'Logs', false, function () {
+                    actions.logs(mainContainer.name, btn);
+                }));
+                menu.appendChild(makeItem('fa-file-code-o', 'Compose', false, function () {
+                    actions.compose(mainContainer.name, btn);
                 }));
             }
 
             menu.appendChild(makeDivider());
             menu.appendChild(makeItem('fa-trash', 'Delete all', true, function () {
-                groupActions.deleteAll(allNames, project);
+                actions.deleteAll(allNames, project);
             }));
 
             document.body.appendChild(menu);

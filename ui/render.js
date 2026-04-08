@@ -229,10 +229,7 @@
         actionsCell.setAttribute('role', 'cell');
         actionsCell.setAttribute('data-label', 'Actions');
         actionsCell.className = 'pf-v6-c-table__action';
-        actionsCell.appendChild(Portly.kebab.createGroupButton(project, containers, {
-            stopAll:   actions.stopAll,
-            deleteAll: actions.deleteAll
-        }));
+        actionsCell.appendChild(Portly.kebab.createGroupButton(project, containers, mainC, actions));
         row.appendChild(actionsCell);
 
         return row;
