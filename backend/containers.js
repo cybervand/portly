@@ -15,6 +15,12 @@
 
     // ── Parsing ────────────────────────────────────────────────────────────────
 
+    function extractComposeProject(labelsStr) {
+        if (!labelsStr) return '';
+        var match = labelsStr.match(/(?:^|,)com\.docker\.compose\.project=([^,]+)/);
+        return match ? match[1].trim() : '';
+    }
+
     function parseDockerPs(output) {
         var lines = output.trim().split('\n');
         if (lines.length === 0 || lines[0] === '') return [];
@@ -37,7 +43,7 @@
                     ports:   parts[5].trim(),
                     name:    parts[6].trim(),
                     state:   state,
-                    compose: parts[7] ? parts[7].trim() : ''
+                    compose: extractComposeProject(parts[7] || '')
                 });
             }
         }
