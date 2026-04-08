@@ -169,22 +169,26 @@
         summarySpan.className = 'portly-group-summary';
         summarySpan.textContent = summary;
 
-        cell.appendChild(arrow);
-        cell.appendChild(nameSpan);
-        cell.appendChild(summarySpan);
+        // Inner div fills the cell width reliably for flex layout
+        var inner = document.createElement('div');
+        inner.className = 'portly-group-inner';
+
+        inner.appendChild(arrow);
+        inner.appendChild(nameSpan);
+        inner.appendChild(summarySpan);
 
         // Main port link (first web port from any running container)
         var mainPort = findMainPort(containers);
         if (mainPort) {
-            var proto   = Portly.ports.getDefaultProtocol(mainPort.port);
+            var proto    = Portly.ports.getDefaultProtocol(mainPort.port);
             var portLink = document.createElement('a');
-            portLink.className = 'portly-group-port-link';
-            portLink.href      = proto + '://' + mainPort.host + ':' + mainPort.port;
-            portLink.target    = '_blank';
-            portLink.rel       = 'noopener noreferrer';
+            portLink.className   = 'portly-group-port-link';
+            portLink.href        = proto + '://' + mainPort.host + ':' + mainPort.port;
+            portLink.target      = '_blank';
+            portLink.rel         = 'noopener noreferrer';
             portLink.textContent = mainPort.host + ':' + mainPort.port;
             portLink.addEventListener('click', function (e) { e.stopPropagation(); });
-            cell.appendChild(portLink);
+            inner.appendChild(portLink);
         }
 
         // Group kebab (stop all / delete all) — right-aligned
@@ -194,8 +198,9 @@
             stopAll:   actions.stopAll,
             deleteAll: actions.deleteAll
         }));
-        cell.appendChild(kebabWrapper);
+        inner.appendChild(kebabWrapper);
 
+        cell.appendChild(inner);
         row.appendChild(cell);
         return row;
     }
