@@ -122,6 +122,32 @@
             });
         },
 
+        stopAll: function (names) {
+            Portly.render.setAllButtonsDisabled(true);
+            Portly.containers.stopAll(names, {
+                onSuccess: refresh,
+                onError: function (msg) {
+                    Portly.render.setAllButtonsDisabled(false);
+                    Portly.render.showError(msg);
+                }
+            });
+        },
+
+        deleteAll: function (names, project) {
+            var message = 'All containers in \u201C' + project + '\u201D will be stopped and permanently deleted. This cannot be undone.';
+            Portly.confirm.show('Delete Project', message, 'Delete All', true, function () {
+                Portly.confirm.close();
+                Portly.render.setAllButtonsDisabled(true);
+                Portly.containers.deleteAll(names, {
+                    onSuccess: refresh,
+                    onError: function (msg) {
+                        Portly.render.setAllButtonsDisabled(false);
+                        Portly.render.showError(msg);
+                    }
+                });
+            });
+        },
+
         delete: function (name, isRunning) {
             var message = isRunning
                 ? 'Container \u201C' + name + '\u201D is currently running. It will be stopped and permanently deleted.'

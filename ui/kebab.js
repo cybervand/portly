@@ -105,15 +105,69 @@
         return btn;
     }
 
+    /** Create a kebab ⋮ button for a compose project group.
+     *  Menu items: Stop all (if any running) / Delete all. */
+    function createGroupButton(project, containers, groupActions) {
+        var btn = document.createElement('button');
+        btn.className = 'pf-v6-c-button pf-m-plain portly-kebab';
+        btn.setAttribute('aria-label', 'Actions for project ' + project);
+        btn.setAttribute('aria-haspopup', 'true');
+        btn.textContent = '\u22EE'; // ⋮
+
+        btn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            if (activeMenu) { closeActive(); return; }
+
+            var menu = document.createElement('div');
+            menu.className = 'portly-menu';
+            menu.setAttribute('role', 'menu');
+
+            var allNames     = containers.map(function (c) { return c.name; });
+            var runningNames = containers
+                .filter(function (c) { return c.state === 'running' || c.state === 'paused'; })
+                .map(function (c) { return c.name; });
+
+            if (runningNames.length > 0) {
+                menu.appendChild(makeItem('fa-stop', 'Stop all', false, function () {
+                    groupActions.stopAll(runningNames);
+                }));
+            }
+
+            menu.appendChild(makeDivider());
+            menu.appendChild(makeItem('fa-trash', 'Delete all', true, function () {
+                groupActions.deleteAll(allNames, project);
+            }));
+
+            document.body.appendChild(menu);
+            activeMenu = menu;
+
+            var r      = btn.getBoundingClientRect();
+            var menuH  = menu.offsetHeight;
+            var menuW  = menu.offsetWidth;
+            var spaceBelow = window.innerHeight - r.bottom;
+            var top  = spaceBelow >= menuH + 8 ? r.bottom + 4 : r.top - menuH - 4;
+            var left = Math.min(r.left, window.innerWidth - menuW - 8);
+
+            menu.style.top  = top  + 'px';
+            menu.style.left = left + 'px';
+
+            var first = menu.querySelector('.portly-menu__item');
+            if (first) first.focus();
+        });
+
+        return btn;
+    }
+
     // Close on outside click
     document.addEventListener('click', function (e) {
         if (activeMenu && !activeMenu.contains(e.target)) closeActive();
     });
 
     Portly.kebab = {
-        open:         open,
-        closeActive:  closeActive,
-        createButton: createButton,
-        isOpen:       function () { return !!activeMenu; }
+        open:              open,
+        closeActive:       closeActive,
+        createButton:      createButton,
+        createGroupButton: createGroupButton,
+        isOpen:            function () { return !!activeMenu; }
     };
 })();

@@ -133,7 +133,20 @@
 
     // ── Group accordion ────────────────────────────────────────────────────────
 
-    function buildGroupHeader(project, containers) {
+    function findMainPort(containers) {
+        var running = containers.filter(function (c) { return c.state === 'running'; });
+        for (var i = 0; i < running.length; i++) {
+            var mappings = Portly.ports.parsePortMappings(running[i].ports);
+            for (var j = 0; j < mappings.length; j++) {
+                if (Portly.ports.getDefaultProtocol(mappings[j].port) !== 'none') {
+                    return mappings[j];
+                }
+            }
+        }
+        return null;
+    }
+
+    function buildGroupHeader(project, containers, actions) {
         var running = containers.filter(function (c) { return c.state === 'running'; }).length;
         var total   = containers.length;
         var summary = total + ' container' + (total !== 1 ? 's' : '') + ' \u00B7 ' + running + ' running';
@@ -159,8 +172,31 @@
         cell.appendChild(arrow);
         cell.appendChild(nameSpan);
         cell.appendChild(summarySpan);
-        row.appendChild(cell);
 
+        // Main port link (first web port from any running container)
+        var mainPort = findMainPort(containers);
+        if (mainPort) {
+            var proto   = Portly.ports.getDefaultProtocol(mainPort.port);
+            var portLink = document.createElement('a');
+            portLink.className = 'portly-group-port-link';
+            portLink.href      = proto + '://' + mainPort.host + ':' + mainPort.port;
+            portLink.target    = '_blank';
+            portLink.rel       = 'noopener noreferrer';
+            portLink.textContent = mainPort.host + ':' + mainPort.port;
+            portLink.addEventListener('click', function (e) { e.stopPropagation(); });
+            cell.appendChild(portLink);
+        }
+
+        // Group kebab (stop all / delete all) — right-aligned
+        var kebabWrapper = document.createElement('span');
+        kebabWrapper.className = 'portly-group-actions';
+        kebabWrapper.appendChild(Portly.kebab.createGroupButton(project, containers, {
+            stopAll:   actions.stopAll,
+            deleteAll: actions.deleteAll
+        }));
+        cell.appendChild(kebabWrapper);
+
+        row.appendChild(cell);
         return row;
     }
 
@@ -210,7 +246,7 @@
             if (!isFirst) containersTbody.appendChild(buildDivider());
             isFirst = false;
 
-            var headerRow  = buildGroupHeader(project, groups[project]);
+            var headerRow  = buildGroupHeader(project, groups[project], actions);
             containersTbody.appendChild(headerRow);
 
             var memberRows = [];

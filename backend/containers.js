@@ -254,6 +254,72 @@
             });
     }
 
+    // ── Bulk operations ────────────────────────────────────────────────────────
+
+    function stopAll(names, callbacks) {
+        var remaining = names.length;
+        var failed    = 0;
+
+        if (remaining === 0) {
+            if (callbacks.onSuccess) callbacks.onSuccess();
+            return;
+        }
+
+        names.forEach(function (name) {
+            cli().stop(name)
+                .done(function () {
+                    remaining--;
+                    if (remaining === 0) {
+                        if (failed > 0) {
+                            if (callbacks.onError) callbacks.onError('Some containers failed to stop');
+                        } else {
+                            if (callbacks.onSuccess) callbacks.onSuccess();
+                        }
+                    }
+                })
+                .fail(function (error) {
+                    console.error('Failed to stop container:', name, error);
+                    failed++;
+                    remaining--;
+                    if (remaining === 0) {
+                        if (callbacks.onError) callbacks.onError('Some containers failed to stop');
+                    }
+                });
+        });
+    }
+
+    function deleteAll(names, callbacks) {
+        var remaining = names.length;
+        var failed    = 0;
+
+        if (remaining === 0) {
+            if (callbacks.onSuccess) callbacks.onSuccess();
+            return;
+        }
+
+        names.forEach(function (name) {
+            cli().rm(name)
+                .done(function () {
+                    remaining--;
+                    if (remaining === 0) {
+                        if (failed > 0) {
+                            if (callbacks.onError) callbacks.onError('Some containers failed to delete');
+                        } else {
+                            if (callbacks.onSuccess) callbacks.onSuccess();
+                        }
+                    }
+                })
+                .fail(function (error) {
+                    console.error('Failed to delete container:', name, error);
+                    failed++;
+                    remaining--;
+                    if (remaining === 0) {
+                        if (callbacks.onError) callbacks.onError('Some containers failed to delete');
+                    }
+                });
+        });
+    }
+
     // ── Data fetching (for text viewer) ────────────────────────────────────────
 
     function fetchLogs(name, callbacks) {
@@ -311,6 +377,8 @@
         restartContainer: restartContainer,
         updateContainer:  updateContainer,
         deleteContainer:  deleteContainer,
+        stopAll:          stopAll,
+        deleteAll:        deleteAll,
         fetchLogs:        fetchLogs,
         fetchComposeFile: fetchComposeFile
     };
