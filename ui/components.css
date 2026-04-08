@@ -277,7 +277,7 @@
 .portly-group-inner {
     display: flex;
     align-items: center;
-    width: 100%;
+    gap: 8px;
 }
 
 .portly-group-header:hover td {
@@ -315,10 +315,6 @@
     text-decoration: underline;
 }
 
-.portly-group-actions {
-    margin-left: auto;
-    flex-shrink: 0;
-}
 
 .portly-group-divider td {
     padding: 0;

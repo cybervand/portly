@@ -149,35 +149,43 @@
     function buildGroupHeader(project, containers, actions) {
         var running = containers.filter(function (c) { return c.state === 'running'; }).length;
         var total   = containers.length;
-        var summary = total + ' container' + (total !== 1 ? 's' : '') + ' \u00B7 ' + running + ' running';
 
         var row = document.createElement('tr');
         row.className = 'portly-group-header';
 
-        var cell = document.createElement('td');
-        cell.setAttribute('colspan', '6');
-
+        // ── Name column: arrow + project name ─────────────────────────────────
+        var nameCell = document.createElement('td');
+        nameCell.setAttribute('role', 'cell');
+        var inner = document.createElement('div');
+        inner.className = 'portly-group-inner';
         var arrow = document.createElement('span');
         arrow.className = 'portly-group-arrow';
         arrow.textContent = '\u25B6'; // ▶
-
         var nameSpan = document.createElement('span');
         nameSpan.className = 'portly-group-name';
         nameSpan.textContent = project;
-
-        var summarySpan = document.createElement('span');
-        summarySpan.className = 'portly-group-summary';
-        summarySpan.textContent = summary;
-
-        // Inner div fills the cell width reliably for flex layout
-        var inner = document.createElement('div');
-        inner.className = 'portly-group-inner';
-
         inner.appendChild(arrow);
         inner.appendChild(nameSpan);
-        inner.appendChild(summarySpan);
+        nameCell.appendChild(inner);
+        row.appendChild(nameCell);
 
-        // Main port link (first web port from any running container)
+        // ── Status column: running count ───────────────────────────────────────
+        var statusCell = document.createElement('td');
+        statusCell.setAttribute('role', 'cell');
+        statusCell.setAttribute('data-label', 'Status');
+        var statusSpan = document.createElement('span');
+        statusSpan.className = 'portly-group-summary';
+        statusSpan.textContent = running + '\u202F/\u202F' + total + ' running';
+        statusCell.appendChild(statusSpan);
+        row.appendChild(statusCell);
+
+        // ── Image column: empty ────────────────────────────────────────────────
+        row.appendChild(document.createElement('td'));
+
+        // ── Ports column: main port link ───────────────────────────────────────
+        var portsCell = document.createElement('td');
+        portsCell.setAttribute('role', 'cell');
+        portsCell.setAttribute('data-label', 'Ports');
         var mainPort = findMainPort(containers);
         if (mainPort) {
             var proto    = Portly.ports.getDefaultProtocol(mainPort.port);
@@ -188,20 +196,24 @@
             portLink.rel         = 'noopener noreferrer';
             portLink.textContent = mainPort.host + ':' + mainPort.port;
             portLink.addEventListener('click', function (e) { e.stopPropagation(); });
-            inner.appendChild(portLink);
+            portsCell.appendChild(portLink);
         }
+        row.appendChild(portsCell);
 
-        // Group kebab (stop all / delete all) — right-aligned
-        var kebabWrapper = document.createElement('span');
-        kebabWrapper.className = 'portly-group-actions';
-        kebabWrapper.appendChild(Portly.kebab.createGroupButton(project, containers, {
+        // ── Uptime column: empty ───────────────────────────────────────────────
+        row.appendChild(document.createElement('td'));
+
+        // ── Actions column: group kebab ────────────────────────────────────────
+        var actionsCell = document.createElement('td');
+        actionsCell.setAttribute('role', 'cell');
+        actionsCell.setAttribute('data-label', 'Actions');
+        actionsCell.className = 'pf-v6-c-table__action';
+        actionsCell.appendChild(Portly.kebab.createGroupButton(project, containers, {
             stopAll:   actions.stopAll,
             deleteAll: actions.deleteAll
         }));
-        inner.appendChild(kebabWrapper);
+        row.appendChild(actionsCell);
 
-        cell.appendChild(inner);
-        row.appendChild(cell);
         return row;
     }
 
